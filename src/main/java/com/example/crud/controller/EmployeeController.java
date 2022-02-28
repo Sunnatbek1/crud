@@ -21,7 +21,7 @@ public class EmployeeController {
 
 	@RequestMapping(value = "/")
 	public String viewHomePage(Model model) {
-		return findPaginated(1, "firstName", "asc", model);		
+		return findPaginated(1, model);
 	}
 	
 	@RequestMapping(value = "/showNewEmployeeForm", method = RequestMethod.GET)
@@ -54,24 +54,20 @@ public class EmployeeController {
 	
 	
 	@RequestMapping("/page/{pageNo}")
-	public String findPaginated(@PathVariable (value = "pageNo") int pageNo, 
-			@RequestParam("sortField") String sortField,
-			@RequestParam("sortDir") String sortDir,
+	public String findPaginated(@PathVariable (value = "pageNo") int pageNo,
 			Model model) {
-		int pageSize = 5;
+		int pageSize = 3;
 		
-		Page<Employee> page = employeeService.findPaginated(pageNo, pageSize, sortField, sortDir);
+		Page<Employee> page = employeeService.findPaginated(pageNo, pageSize);
 		List<Employee> listEmployees = page.getContent();
 		
 		model.addAttribute("currentPage", pageNo);
 		model.addAttribute("totalPages", page.getTotalPages());
 		model.addAttribute("totalItems", page.getTotalElements());
-		
-		model.addAttribute("sortField", sortField);
-		model.addAttribute("sortDir", sortDir);
-		model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
-		
+
 		model.addAttribute("listEmployees", listEmployees);
 		return "index";
 	}
+
+
 }

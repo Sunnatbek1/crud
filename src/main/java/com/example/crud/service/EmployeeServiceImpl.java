@@ -9,8 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -22,8 +21,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public List<Employee> getAllEmployees() {
-		return employeeRepository.findAll();
+	public Set<Employee> getAllEmployees() {
+		Set<Employee> employees=new HashSet<>();
+		employeeRepository.findAll().forEach(employees::add);
+		return employees;
 	}
 
 	@Override
@@ -33,6 +34,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Override
 	public Employee getEmployeeById(long id) {
+		return employeeRepository.findById(id).orElse(null);/*
 		Optional<Employee> optional = employeeRepository.findById(id);
 		Employee employee = null;
 		if (optional.isPresent()) {
@@ -40,7 +42,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		} else {
 			throw new RuntimeException(" Employee not found for id :: " + id);
 		}
-		return employee;
+		return employee;*/
 	}
 
 	@Override
@@ -49,11 +51,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public Page<Employee> findPaginated(int pageNo, int pageSize, String sortField, String sortDirection) {
-		Sort sort = sortDirection.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortField).ascending() :
-			Sort.by(sortField).descending();
-		
-		Pageable pageable = PageRequest.of(pageNo - 1, pageSize, sort);
+	public Page<Employee> findPaginated(int pageNo, int pageSize) {
+		Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
 		return this.employeeRepository.findAll(pageable);
 	}
 }
